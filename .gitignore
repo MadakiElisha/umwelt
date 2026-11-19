@@ -1,0 +1,29 @@
+# colcon
+build/
+install/
+log/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Editors and OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# Android / Gradle (glasses client)
+glasses/**/.gradle/
+glasses/**/build/
+glasses/**/local.properties
+
+# Sim output
+*.ulg
+*.bag
+rosbag2_*/

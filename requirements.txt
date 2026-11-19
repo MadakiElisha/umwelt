@@ -1,0 +1,6 @@
+# Python packages that are not provided by ROS 2 Jazzy through apt.
+# Installed into ~/umwelt_ws/.venv by scripts/setup_env.sh.
+# Keep this list short and pinned to compatible ranges.
+
+numpy>=1.26,<2.0
+pytest>=8
