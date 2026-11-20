@@ -55,11 +55,21 @@ The repo lives inside its own colcon workspace so it never shares a build with o
 ```bash
 mkdir -p ~/umwelt_ws/src
 cd ~/umwelt_ws/src
-git clone git@github.com:MadakiElisha/umwelt.git
+git clone https://github.com/MadakiElisha/umwelt.git
 cd umwelt
 
 ./scripts/check_env.sh      # reports what is installed and what is missing
 ./scripts/setup_env.sh      # creates ~/umwelt_ws/.venv for extra Python packages
+```
+
+Fetch source dependencies (PX4 message definitions matching PX4 v1.15) and build:
+
+```bash
+source scripts/activate.sh
+vcs import ~/umwelt_ws/src < umwelt.repos
+cd ~/umwelt_ws
+rosdep install --from-paths src --ignore-src -y
+colcon build
 ```
 
 Then, in each new shell:
@@ -72,14 +82,23 @@ This sources ROS 2 Jazzy, activates the project virtual environment and, once so
 
 ## Roadmap
 
-1. **Scaffold.** Layout, environment setup, docs. *(this PR)*
-2. **Interfaces.** `Belief`, `Task` and `Intent` messages.
+1. **Scaffold.** Layout, environment setup, docs. *(done)*
+2. **Interfaces.** `Belief`, `Task` and `Intent` messages. *(done)*
 3. **Belief in sim.** PX4 SITL drone in Gazebo publishing pose and an occupancy belief.
 4. **Viewer.** Desktop 3D view from an operator position, showing the belief in place.
 5. **Intent.** Click or speak to select a point, turn it into a task, watch the drone act on it.
 6. **Asking well.** The robot decides when to ask the operator, based on expected information gain.
 7. **Glasses.** Move the viewer to Android XR, solve co-localization outdoors.
 8. **More vehicles.** A UGV and a USV on the same interfaces.
+
+## Running the simulation
+
+```bash
+source ~/umwelt_ws/src/umwelt/scripts/activate.sh
+ros2 launch umwelt_sim sim.launch.py
+```
+
+See `sim/README.md` for what this starts and how to watch the belief build up.
 
 ## Status
 

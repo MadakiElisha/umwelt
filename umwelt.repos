@@ -1,0 +1,8 @@
+# Source dependencies not available as Jazzy binaries.
+# Import into the workspace with:
+#   vcs import ~/umwelt_ws/src < ~/umwelt_ws/src/umwelt/umwelt.repos
+repositories:
+  px4_msgs:
+    type: git
+    url: https://github.com/PX4/px4_msgs.git
+    version: release/1.15
