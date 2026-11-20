@@ -27,7 +27,15 @@ if [ -f "$UMWELT_WS/install/setup.bash" ]; then
   source "$UMWELT_WS/install/setup.bash"
 fi
 
-# Keep this project's DDS traffic separate from other ROS 2 work on the same network.
-export ROS_DOMAIN_ID="${ROS_DOMAIN_ID:-42}"
+# PX4 talks to ROS 2 through the Micro XRCE-DDS Agent, which publishes over DDS.
+# Nodes on a different middleware (for example rmw_zenoh_cpp) will not see PX4
+# topics, so this project pins Fast DDS for the current shell only.
+# Override with UMWELT_RMW if you need something else.
+export RMW_IMPLEMENTATION="${UMWELT_RMW:-rmw_fastrtps_cpp}"
+
+# Keep this project's DDS traffic separate from other ROS 2 work on the same
+# network. PX4 must use the same domain: its UXRCE_DDS_DOM_ID parameter is set
+# from this value by the sim launch files.
+export ROS_DOMAIN_ID="${UMWELT_DOMAIN_ID:-42}"
 
 unset _umwelt_repo _umwelt_ws
