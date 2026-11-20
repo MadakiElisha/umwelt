@@ -1,6 +1,40 @@
 # sim
 
-Gazebo worlds, PX4 configuration and launch files.
+Gazebo worlds and launch files, in the `umwelt_sim` package.
+
+## Running
+
+```bash
+source ~/umwelt_ws/src/umwelt/scripts/activate.sh
+ros2 launch umwelt_sim sim.launch.py              # add headless:=true to skip the Gazebo GUI
+```
+
+This starts Gazebo with the `umwelt_field` world, the Micro XRCE-DDS Agent, PX4 SITL in standalone mode (spawning an x500 with a depth camera), a bridge for the depth cloud, and the belief node.
+
+Fly the drone with QGroundControl: take off, then send it toward the wall to the east, the shed to the north east or the poles to the south east.
+
+## Watching the belief
+
+In another shell:
+
+```bash
+source ~/umwelt_ws/src/umwelt/scripts/activate.sh
+ros2 topic hz /umwelt/x500_depth_0/belief      # about 5 Hz once PX4 is up
+rviz2
+```
+
+In RViz set the fixed frame to `world`, then add:
+
+- **Map** on `/umwelt/x500_depth_0/debug/occupancy`
+- **Pose** on `/umwelt/x500_depth_0/debug/pose`
+
+Grey is unknown (the 0.5 prior). As the drone flies, cells along each camera ray turn free and cells at obstacles turn occupied.
+
+## Troubleshooting
+
+- **No PX4 topics** (`ros2 topic list | grep fmu` is empty): check that `RMW_IMPLEMENTATION` is `rmw_fastrtps_cpp`, and that `UXRCE_DDS_DOM_ID` is 42 in the QGroundControl parameter list.
+- **No point cloud**: list Gazebo topics with `gz topic -l | grep -i depth` and pass the right one as `points_topic:=...`.
+- **Map looks rotated or mirrored**: the cloud may use the optical convention. Relaunch the belief node with `cloud_is_optical:=true`.
 
 Target versions: PX4 v1.15 or newer, Gazebo Harmonic, ROS 2 Jazzy, with the Micro XRCE-DDS Agent bridging PX4 and ROS 2.
 
