@@ -39,6 +39,14 @@ if [ -f /opt/ros/jazzy/setup.bash ]; then
 else
   miss "ROS 2 Jazzy (/opt/ros/jazzy/setup.bash)"
 fi
+if [ -d /opt/ros/jazzy/lib/librmw_fastrtps_cpp.so ] || [ -f /opt/ros/jazzy/lib/librmw_fastrtps_cpp.so ]; then
+  ok "rmw_fastrtps_cpp (needed to see PX4 topics)"
+else
+  miss "rmw_fastrtps_cpp (sudo apt install ros-jazzy-rmw-fastrtps-cpp)"
+fi
+if [ -n "${RMW_IMPLEMENTATION:-}" ] && [ "$RMW_IMPLEMENTATION" != "rmw_fastrtps_cpp" ]; then
+  warn "this shell uses $RMW_IMPLEMENTATION; scripts/activate.sh switches to Fast DDS for this project"
+fi
 check colcon "colcon" "sudo apt install python3-colcon-common-extensions"
 check rosdep "rosdep" "sudo apt install python3-rosdep"
 
