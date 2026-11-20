@@ -45,7 +45,8 @@ def _setup(context):
     spawn_pose = LaunchConfiguration('spawn_pose').perform(context)
     domain = os.environ.get('ROS_DOMAIN_ID', '0')
 
-    px4_bin = os.path.join(px4_dir, 'build', 'px4_sitl_default', 'bin', 'px4')
+    build_dir = os.path.join(px4_dir, 'build', 'px4_sitl_default')
+    px4_bin = os.path.join(build_dir, 'bin', 'px4')
     if not os.path.isfile(px4_bin):
         return [LogInfo(msg=f'PX4 SITL binary not found at {px4_bin}. '
                             'Build it with: make px4_sitl in your PX4-Autopilot checkout, '
@@ -70,9 +71,13 @@ def _setup(context):
 
     agent = ExecuteProcess(cmd=['MicroXRCEAgent', 'udp4', '-p', '8888'], output='screen')
 
+    # PX4 runs from a per-instance working directory and is pointed at the
+    # build's etc folder, the same way PX4's own multi-vehicle script does it.
+    rootfs = os.path.join(build_dir, 'rootfs', '0')
+    os.makedirs(rootfs, exist_ok=True)
     px4 = ExecuteProcess(
-        cmd=[px4_bin, '-d', '-i', '0'],
-        cwd=px4_dir,
+        cmd=[px4_bin, '-i', '0', '-d', os.path.join(build_dir, 'etc')],
+        cwd=rootfs,
         additional_env={
             **gz_env,
             'PX4_GZ_STANDALONE': '1',
