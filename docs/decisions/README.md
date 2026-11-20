@@ -7,3 +7,4 @@ Each record is numbered and covers one decision: the context, what was decided a
 | No. | Decision |
 | --- | --- |
 | 0001 | [Glasses are a thin client](0001-glasses-as-thin-client.md) |
+| 0002 | [Interface design](0002-interface-design.md) |
