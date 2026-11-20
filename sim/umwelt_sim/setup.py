@@ -20,4 +20,5 @@ setup(
     maintainer_email='madakielisha@users.noreply.github.com',
     description='Gazebo worlds and launch files for umwelt.',
     license='Apache-2.0',
+    tests_require=['pytest'],
 )
