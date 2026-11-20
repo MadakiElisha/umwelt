@@ -9,7 +9,7 @@ Starts, in order:
   4. a ros_gz bridge for the depth point cloud
   5. the umwelt belief node
 
-PX4 is told to use ROS_DOMAIN_ID through its UXRCE_DDS_DOM_ID parameter,
+PX4's startup script copies ROS_DOMAIN_ID into its UXRCE_DDS_DOM_ID parameter,
 so PX4 topics show up on the same domain as the rest of the project.
 
 Usage:
@@ -85,7 +85,6 @@ def _setup(context):
             'PX4_SYS_AUTOSTART': PX4_AIRFRAME,
             'PX4_SIM_MODEL': PX4_MODEL,
             'PX4_GZ_MODEL_POSE': spawn_pose,
-            'PX4_PARAM_UXRCE_DDS_DOM_ID': domain,
         },
         output='screen',
     )
