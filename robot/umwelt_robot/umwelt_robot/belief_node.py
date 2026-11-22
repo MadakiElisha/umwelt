@@ -133,9 +133,12 @@ class BeliefNode(Node):
             return
         pts = point_cloud2.read_points_numpy(msg, field_names=('x', 'y', 'z'),
                                              skip_nans=True)
+        # Depth cameras report +inf where nothing is in range (sky, far away).
+        # skip_nans only removes NaN, so drop non-finite points here.
+        pts = pts[::self.stride].astype(float)
+        pts = pts[np.isfinite(pts).all(axis=1)]
         if pts.size == 0:
             return
-        pts = pts[::self.stride].astype(float)
 
         # Camera frame to body, then body to world. Uses the latest odometry,
         # which is close enough at sim rates. Interpolation can come later.
