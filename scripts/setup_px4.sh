@@ -19,12 +19,10 @@ ws="${UMWELT_WS:-$default_ws}"
 deps="$ws/deps"
 px4="$deps/PX4-Autopilot"
 
-# PX4's build uses system Python packages. Step out of the project venv
-# so they are found the same way PX4's own setup expects.
-if [ -n "${VIRTUAL_ENV:-}" ]; then
-  PATH="$(printf '%s' "$PATH" | tr ':' '\n' | grep -vxF "$VIRTUAL_ENV/bin" | paste -sd ':' -)"
-  export PATH
-  unset VIRTUAL_ENV
+venv="$ws/.venv"
+if [ ! -f "$venv/bin/activate" ]; then
+  echo "No project venv at $venv. Run scripts/setup_env.sh first." >&2
+  exit 1
 fi
 
 mkdir -p "$deps"
@@ -38,6 +36,18 @@ if [ ! -d "$px4/.git" ]; then
 else
   echo "Using existing checkout at $px4 ($(git -C "$px4" describe --tags --always))"
 fi
+
+# PX4's build needs Python packages (kconfiglib, empy, jinja2 and others).
+# Install them into the project venv rather than the system Python, which
+# Ubuntu 24.04 protects, and build from inside the venv so CMake finds them.
+# shellcheck disable=SC1091
+source "$venv/bin/activate"
+reqs="$(mktemp)"
+# PX4 v1.15 lists "matplotlib>=3.0.*", which current pip rejects as invalid.
+sed 's/>=\([0-9.]*\)\.\*/>=\1/' "$px4/Tools/setup/requirements.txt" > "$reqs"
+echo "Installing PX4 build requirements into $venv"
+python -m pip install --quiet -r "$reqs"
+rm -f "$reqs"
 
 echo "Building px4_sitl_default"
 make -C "$px4" px4_sitl
