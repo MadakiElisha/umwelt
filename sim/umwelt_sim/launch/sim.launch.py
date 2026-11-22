@@ -9,7 +9,7 @@ Starts, in order:
   4. a ros_gz bridge for the depth point cloud
   5. the umwelt belief node
 
-PX4 is told to use ROS_DOMAIN_ID through its UXRCE_DDS_DOM_ID parameter,
+PX4's startup script copies ROS_DOMAIN_ID into its UXRCE_DDS_DOM_ID parameter,
 so PX4 topics show up on the same domain as the rest of the project.
 
 Usage:
@@ -45,11 +45,11 @@ def _setup(context):
     spawn_pose = LaunchConfiguration('spawn_pose').perform(context)
     domain = os.environ.get('ROS_DOMAIN_ID', '0')
 
-    px4_bin = os.path.join(px4_dir, 'build', 'px4_sitl_default', 'bin', 'px4')
+    build_dir = os.path.join(px4_dir, 'build', 'px4_sitl_default')
+    px4_bin = os.path.join(build_dir, 'bin', 'px4')
     if not os.path.isfile(px4_bin):
         return [LogInfo(msg=f'PX4 SITL binary not found at {px4_bin}. '
-                            'Build it with: make px4_sitl in your PX4-Autopilot checkout, '
-                            'or pass px4_dir:=<path>.')]
+                            'Run scripts/setup_px4.sh, or pass px4_dir:=<path>.')]
 
     share = get_package_share_directory('umwelt_sim')
     world_file = os.path.join(share, 'worlds', f'{WORLD}.sdf')
@@ -70,9 +70,13 @@ def _setup(context):
 
     agent = ExecuteProcess(cmd=['MicroXRCEAgent', 'udp4', '-p', '8888'], output='screen')
 
+    # PX4 runs from a per-instance working directory and is pointed at the
+    # build's etc folder, the same way PX4's own multi-vehicle script does it.
+    rootfs = os.path.join(build_dir, 'rootfs', '0')
+    os.makedirs(rootfs, exist_ok=True)
     px4 = ExecuteProcess(
-        cmd=[px4_bin, '-d', '-i', '0'],
-        cwd=px4_dir,
+        cmd=[px4_bin, '-i', '0', '-d', os.path.join(build_dir, 'etc')],
+        cwd=rootfs,
         additional_env={
             **gz_env,
             'PX4_GZ_STANDALONE': '1',
@@ -80,7 +84,6 @@ def _setup(context):
             'PX4_SYS_AUTOSTART': PX4_AIRFRAME,
             'PX4_SIM_MODEL': PX4_MODEL,
             'PX4_GZ_MODEL_POSE': spawn_pose,
-            'PX4_PARAM_UXRCE_DDS_DOM_ID': domain,
         },
         output='screen',
     )
@@ -114,7 +117,10 @@ def _setup(context):
 def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument(
-            'px4_dir', default_value=os.environ.get('PX4_DIR', '~/PX4-Autopilot'),
+            'px4_dir',
+            default_value=os.environ.get(
+                'PX4_DIR', os.path.join(os.environ.get('UMWELT_WS', '~/umwelt_ws'),
+                                        'deps', 'PX4-Autopilot')),
             description='PX4-Autopilot checkout with px4_sitl_default built'),
         DeclareLaunchArgument(
             'headless', default_value='false',
