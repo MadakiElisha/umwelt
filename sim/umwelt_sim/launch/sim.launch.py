@@ -49,8 +49,7 @@ def _setup(context):
     px4_bin = os.path.join(build_dir, 'bin', 'px4')
     if not os.path.isfile(px4_bin):
         return [LogInfo(msg=f'PX4 SITL binary not found at {px4_bin}. '
-                            'Build it with: make px4_sitl in your PX4-Autopilot checkout, '
-                            'or pass px4_dir:=<path>.')]
+                            'Run scripts/setup_px4.sh, or pass px4_dir:=<path>.')]
 
     share = get_package_share_directory('umwelt_sim')
     world_file = os.path.join(share, 'worlds', f'{WORLD}.sdf')
@@ -118,7 +117,10 @@ def _setup(context):
 def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument(
-            'px4_dir', default_value=os.environ.get('PX4_DIR', '~/PX4-Autopilot'),
+            'px4_dir',
+            default_value=os.environ.get(
+                'PX4_DIR', os.path.join(os.environ.get('UMWELT_WS', '~/umwelt_ws'),
+                                        'deps', 'PX4-Autopilot')),
             description='PX4-Autopilot checkout with px4_sitl_default built'),
         DeclareLaunchArgument(
             'headless', default_value='false',

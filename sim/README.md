@@ -38,7 +38,7 @@ Grey is unknown (the 0.5 prior). As the drone flies, cells along each camera ray
 
 Target versions: PX4 v1.15 or newer, Gazebo Harmonic, ROS 2 Jazzy, with the Micro XRCE-DDS Agent bridging PX4 and ROS 2.
 
-PX4 is not vendored here. Point `PX4_DIR` at your checkout if it is not in `~/PX4-Autopilot`.
+PX4 is not vendored here. `scripts/setup_px4.sh` clones and builds a project-only checkout in `~/umwelt_ws/deps/PX4-Autopilot`, and `activate.sh` points `PX4_DIR` at it. To use a different checkout, set `PX4_DIR` or pass `px4_dir:=...` to the launch.
 
 ## Middleware and domain
 
