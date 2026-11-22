@@ -16,7 +16,7 @@ Builds and publishes the robot's `Belief`.
 | --- | --- | --- |
 | `robot_id` | `x500_depth_0` | Used in topic names |
 | `points_topic` | `/depth_camera/points` | Depth point cloud |
-| `camera_xyz` | `[0.12, 0.03, 0.242]` | Camera position in the body frame (FLU), metres |
+| `camera_xyz` | `[0.132, 0.0, 0.261]` | Camera position in the body frame (FLU), metres |
 | `camera_rpy` | `[0, 0, 0]` | Camera orientation in the body frame, radians |
 | `cloud_is_optical` | `false` | Set true if the cloud uses the ROS optical convention (z forward) |
 | `grid_size_m` | `100.0` | Grid side length, centred on the world origin |
