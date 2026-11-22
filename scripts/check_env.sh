@@ -59,11 +59,17 @@ else
   miss "Gazebo (gz)"
 fi
 
-px4_dir="${PX4_DIR:-$HOME/PX4-Autopilot}"
+ws="${UMWELT_WS:-$HOME/umwelt_ws}"
+px4_dir="${PX4_DIR:-$ws/deps/PX4-Autopilot}"
 if [ -d "$px4_dir/.git" ]; then
   ok "PX4 at $px4_dir ($(git -C "$px4_dir" describe --tags --always 2>/dev/null))"
+  if [ -x "$px4_dir/build/px4_sitl_default/bin/px4" ]; then
+    ok "PX4 SITL built"
+  else
+    miss "PX4 SITL build (run scripts/setup_px4.sh)"
+  fi
 else
-  miss "PX4-Autopilot (set PX4_DIR if it is not in ~/PX4-Autopilot)"
+  miss "project PX4 checkout (run scripts/setup_px4.sh)"
 fi
 check MicroXRCEAgent "Micro XRCE-DDS Agent" "bridge between PX4 and ROS 2"
 
@@ -71,7 +77,6 @@ section "Python"
 ok "$(python3 --version)"
 if python3 -c "import venv" 2>/dev/null; then ok "venv module"; else miss "venv (sudo apt install python3-venv)"; fi
 
-ws="${UMWELT_WS:-$HOME/umwelt_ws}"
 if [ -d "$ws/.venv" ]; then ok "project venv at $ws/.venv"; else warn "no project venv yet (run scripts/setup_env.sh)"; fi
 
 printf '\n'

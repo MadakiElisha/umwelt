@@ -62,6 +62,12 @@ cd umwelt
 ./scripts/setup_env.sh      # creates ~/umwelt_ws/.venv for extra Python packages
 ```
 
+Set up the project's own PX4 v1.15.0 checkout in `~/umwelt_ws/deps` (about 15 minutes, once). It is kept apart from any other PX4 checkout on the machine:
+
+```bash
+./scripts/setup_px4.sh
+```
+
 Fetch source dependencies (PX4 message definitions matching PX4 v1.15) and build:
 
 ```bash

@@ -33,6 +33,11 @@ fi
 # Override with UMWELT_RMW if you need something else.
 export RMW_IMPLEMENTATION="${UMWELT_RMW:-rmw_fastrtps_cpp}"
 
+# Use the project's own PX4 checkout when it exists (scripts/setup_px4.sh).
+if [ -z "${PX4_DIR:-}" ] && [ -d "$UMWELT_WS/deps/PX4-Autopilot" ]; then
+  export PX4_DIR="$UMWELT_WS/deps/PX4-Autopilot"
+fi
+
 # Keep this project's DDS traffic separate from other ROS 2 work on the same
 # network. PX4 must use the same domain: its UXRCE_DDS_DOM_ID parameter is set
 # from this value by the sim launch files.
