@@ -39,13 +39,19 @@
       <shadows>true</shadows>
     </scene>
 
-    <!-- Abuja, roughly. Only matters for GNSS and the magnetic model. -->
+    <!--
+      Same location as PX4's default world. The magnetic_field above is the
+      field at this location, and PX4 checks the simulated magnetometer
+      against its world magnetic model for wherever GNSS says it is. Moving
+      the world elsewhere without changing magnetic_field makes the EKF reject
+      the heading ("Yaw estimate error") and the vehicle will not arm.
+    -->
     <spherical_coordinates>
       <surface_model>EARTH_WGS84</surface_model>
       <world_frame_orientation>ENU</world_frame_orientation>
-      <latitude_deg>9.0765</latitude_deg>
-      <longitude_deg>7.3986</longitude_deg>
-      <elevation>476</elevation>
+      <latitude_deg>47.397971057728974</latitude_deg>
+      <longitude_deg>8.546163739800146</longitude_deg>
+      <elevation>0</elevation>
     </spherical_coordinates>
 
     <light type="directional" name="sun">

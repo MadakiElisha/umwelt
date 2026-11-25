@@ -50,7 +50,7 @@ class BeliefNode(Node):
         self.world_frame = self.declare_parameter('world_frame', 'world').value
         px4_ns = self.declare_parameter('px4_namespace', '').value
         points_topic = self.declare_parameter('points_topic', '/depth_camera/points').value
-        cam_xyz = self.declare_parameter('camera_xyz', [0.12, 0.03, 0.242]).value
+        cam_xyz = self.declare_parameter('camera_xyz', [0.132, 0.0, 0.261]).value
         cam_rpy = self.declare_parameter('camera_rpy', [0.0, 0.0, 0.0]).value
         cloud_is_optical = self.declare_parameter('cloud_is_optical', False).value
         grid_size = self.declare_parameter('grid_size_m', 100.0).value
@@ -72,6 +72,7 @@ class BeliefNode(Node):
         self.r_world_body = None    # FLU body to ENU, (3, 3)
         self.belief = Belief()
         self.scans = 0
+        self.cloud_logged = False
 
         px4_qos = QoSProfile(reliability=ReliabilityPolicy.BEST_EFFORT,
                              durability=DurabilityPolicy.TRANSIENT_LOCAL,
@@ -133,9 +134,21 @@ class BeliefNode(Node):
             return
         pts = point_cloud2.read_points_numpy(msg, field_names=('x', 'y', 'z'),
                                              skip_nans=True)
+        # Depth cameras report +inf where nothing is in range (sky, far away).
+        # skip_nans only removes NaN, so drop non-finite points here.
+        pts = pts[::self.stride].astype(float)
+        pts = pts[np.isfinite(pts).all(axis=1)]
         if pts.size == 0:
             return
-        pts = pts[::self.stride].astype(float)
+        if not self.cloud_logged:
+            # One-off check of the cloud convention. With the camera looking
+            # forward, x should carry the depth for a body-style cloud and z
+            # for an optical one.
+            med = np.median(np.abs(pts), axis=0)
+            self.get_logger().info(
+                f'first cloud: frame_id={msg.header.frame_id!r}, {len(pts)} points, '
+                f'median |x| |y| |z| = {med[0]:.2f} {med[1]:.2f} {med[2]:.2f}')
+            self.cloud_logged = True
 
         # Camera frame to body, then body to world. Uses the latest odometry,
         # which is close enough at sim rates. Interpolation can come later.
