@@ -8,6 +8,7 @@ Starts, in order:
      into the running world
   4. a ros_gz bridge for the depth point cloud
   5. the umwelt belief node
+  6. the viewer bridge, serving the viewer at http://127.0.0.1:8765/
 
 PX4's startup script copies ROS_DOMAIN_ID into its UXRCE_DDS_DOM_ID parameter,
 so PX4 topics show up on the same domain as the rest of the project.
@@ -16,6 +17,7 @@ Usage:
   ros2 launch umwelt_sim sim.launch.py
   ros2 launch umwelt_sim sim.launch.py headless:=true
   ros2 launch umwelt_sim sim.launch.py px4_dir:=/path/to/PX4-Autopilot
+  ros2 launch umwelt_sim sim.launch.py viewer:=false
 """
 
 import os
@@ -43,6 +45,7 @@ def _setup(context):
     headless = LaunchConfiguration('headless').perform(context).lower() in ('1', 'true')
     points_topic = LaunchConfiguration('points_topic').perform(context)
     spawn_pose = LaunchConfiguration('spawn_pose').perform(context)
+    viewer = LaunchConfiguration('viewer').perform(context).lower() in ('1', 'true')
     domain = os.environ.get('ROS_DOMAIN_ID', '0')
 
     build_dir = os.path.join(px4_dir, 'build', 'px4_sitl_default')
@@ -104,7 +107,7 @@ def _setup(context):
         output='screen',
     )
 
-    return [
+    actions = [
         LogInfo(msg=f'umwelt sim: world {WORLD}, PX4 at {px4_dir}, ROS_DOMAIN_ID {domain}'),
         gazebo,
         agent,
@@ -112,6 +115,15 @@ def _setup(context):
         TimerAction(period=5.0, actions=[px4]),
         TimerAction(period=8.0, actions=[bridge, belief]),
     ]
+    if viewer:
+        actions.append(Node(
+            package='umwelt_viewer',
+            executable='viewer_bridge',
+            name='viewer_bridge',
+            parameters=[{'robot_ids': [ROBOT_ID]}],
+            output='screen',
+        ))
+    return actions
 
 
 def generate_launch_description():
@@ -128,6 +140,9 @@ def generate_launch_description():
         DeclareLaunchArgument(
             'points_topic', default_value='/depth_camera/points',
             description='Gazebo topic of the depth point cloud'),
+        DeclareLaunchArgument(
+            'viewer', default_value='true',
+            description='Serve the browser viewer at http://127.0.0.1:8765/'),
         DeclareLaunchArgument(
             'spawn_pose', default_value='0,0,0.2,0,0,0',
             description='Vehicle spawn pose in the world: x,y,z,roll,pitch,yaw'),

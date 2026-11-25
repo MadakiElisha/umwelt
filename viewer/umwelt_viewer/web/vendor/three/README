@@ -1,0 +1,6 @@
+three.js r170 (0.170.0), MIT license, from the npm package "three".
+Vendored so the viewer works on a local network with no internet access.
+
+Files:
+  three.module.min.js   build/three.module.min.js
+  OrbitControls.js      examples/jsm/controls/OrbitControls.js

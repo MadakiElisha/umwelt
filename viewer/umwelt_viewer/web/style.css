@@ -1,0 +1,70 @@
+:root {
+  --bg: #1d2125;
+  --panel: rgba(20, 23, 27, 0.82);
+  --text: #e6e4dc;
+  --muted: #9a988f;
+  --free: #5dcaa5;
+  --occ: #e8643f;
+  --unk: #5f5e5a;
+  --ok: #5dcaa5;
+  --warn: #ef9f27;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font: 13px/1.5 system-ui, -apple-system, "Segoe UI", Ubuntu, sans-serif;
+  overflow: hidden;
+}
+
+#scene { display: block; width: 100vw; height: 100vh; }
+
+#hud {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  width: 250px;
+  padding: 12px 14px;
+  background: var(--panel);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+}
+
+.row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.title { font-weight: 600; font-size: 14px; margin-bottom: 8px; }
+
+.pill { font-size: 11px; font-weight: 500; padding: 1px 8px; border-radius: 999px; }
+.pill.on { background: rgba(93, 202, 165, 0.18); color: var(--ok); }
+.pill.off { background: rgba(239, 159, 39, 0.18); color: var(--warn); }
+
+.robot { padding: 8px 0; border-top: 1px solid rgba(255, 255, 255, 0.08); }
+.robot .name { font-weight: 600; margin-bottom: 2px; }
+.robot dl { display: grid; grid-template-columns: auto 1fr; gap: 0 10px; margin: 0; }
+.robot dt { color: var(--muted); }
+.robot dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }
+
+.controls { margin-top: 8px; }
+button {
+  flex: 1;
+  padding: 5px 0;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  font: inherit;
+  cursor: pointer;
+}
+button:hover { background: rgba(255, 255, 255, 0.12); }
+button.active { border-color: var(--free); color: var(--free); }
+
+.legend { display: flex; gap: 12px; margin-top: 10px; color: var(--muted); }
+.swatch { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; vertical-align: -1px; }
+.swatch.free { background: var(--free); }
+.swatch.occ { background: var(--occ); }
+.swatch.unk { background: var(--unk); }
+
+.hint { margin-top: 8px; color: var(--muted); font-size: 12px; }

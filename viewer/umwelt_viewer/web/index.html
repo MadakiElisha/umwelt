@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>umwelt viewer</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="/static/style.css">
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "/static/vendor/three/three.module.min.js",
+        "three/addons/controls/OrbitControls.js": "/static/vendor/three/OrbitControls.js"
+      }
+    }
+  </script>
+</head>
+<body>
+  <canvas id="scene"></canvas>
+
+  <aside id="hud">
+    <div class="row title">
+      <span>umwelt</span>
+      <span id="link" class="pill off">offline</span>
+    </div>
+    <div id="robots"></div>
+    <div class="row controls">
+      <button id="view-operator" title="Operator view (O)">Operator</button>
+      <button id="view-top" title="Top view (T)">Top</button>
+      <button id="view-follow" title="Follow robot (F)">Follow</button>
+    </div>
+    <div class="legend">
+      <span><i class="swatch free"></i>free</span>
+      <span><i class="swatch occ"></i>occupied</span>
+      <span><i class="swatch unk"></i>unknown</span>
+    </div>
+    <div class="hint">Colour strength is certainty. Ring around the robot is its 2&sigma; position uncertainty.</div>
+  </aside>
+
+  <script type="module" src="/static/main.js"></script>
+</body>
+</html>
