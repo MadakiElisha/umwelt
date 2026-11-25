@@ -90,7 +90,7 @@ This sources ROS 2 Jazzy, activates the project virtual environment and, once so
 
 1. **Scaffold.** Layout, environment setup, docs. *(done)*
 2. **Interfaces.** `Belief`, `Task` and `Intent` messages. *(done)*
-3. **Belief in sim.** PX4 SITL drone in Gazebo publishing pose and an occupancy belief.
+3. **Belief in sim.** PX4 SITL drone in Gazebo publishing pose and an occupancy belief. *(done)*
 4. **Viewer.** Desktop 3D view from an operator position, showing the belief in place.
 5. **Intent.** Click or speak to select a point, turn it into a task, watch the drone act on it.
 6. **Asking well.** The robot decides when to ask the operator, based on expected information gain.
@@ -104,7 +104,7 @@ source ~/umwelt_ws/src/umwelt/scripts/activate.sh
 ros2 launch umwelt_sim sim.launch.py
 ```
 
-See `sim/README.md` for what this starts and how to watch the belief build up.
+Then open http://127.0.0.1:8765/ to see the belief from the operator's point of view. See `sim/README.md` for what the launch starts and `viewer/README.md` for the viewer.
 
 ## Status
 
