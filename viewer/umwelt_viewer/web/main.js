@@ -244,6 +244,8 @@ function applyGrid(header, cells) {
       columns += 1;
     }
   }
+  r.cells = cells;
+  r.gridHeader = header;
   r.texture.needsUpdate = true;
   r.columns.count = columns;
   r.columns.instanceMatrix.needsUpdate = true;
@@ -303,6 +305,44 @@ document.getElementById('view-follow').onclick = () => setView('follow');
 window.addEventListener('keydown', (e) => {
   const key = { o: 'operator', t: 'top', f: 'follow' }[e.key.toLowerCase()];
   if (key) setView(key);
+});
+
+// ---------------------------------------------------------------- cursor
+
+// Hovering over the ground shows the world position and, if a robot has a
+// cell there, its P(occupied). Clicking will use the same ray for intent.
+const raycaster = new THREE.Raycaster();
+const pointer = new THREE.Vector2();
+const cursorEl = document.getElementById('cursor');
+
+function groundPoint(ev) {
+  const rect = canvas.getBoundingClientRect();
+  pointer.set(((ev.clientX - rect.left) / rect.width) * 2 - 1,
+    -((ev.clientY - rect.top) / rect.height) * 2 + 1);
+  raycaster.setFromCamera(pointer, camera);
+  const hit = raycaster.intersectObject(ground, false)[0];
+  return hit ? world.worldToLocal(hit.point.clone()) : null;
+}
+
+function cellProbability(x, y) {
+  for (const r of robots.values()) {
+    const h = r.gridHeader;
+    if (!h) continue;
+    const ix = Math.floor((x - h.origin[0]) / h.resolution);
+    const iy = Math.floor((y - h.origin[1]) / h.resolution);
+    if (ix >= 0 && ix < h.width && iy >= 0 && iy < h.height) return r.cells[iy * h.width + ix] / 255;
+  }
+  return null;
+}
+
+canvas.addEventListener('pointermove', (ev) => {
+  const p = groundPoint(ev);
+  if (!p) {
+    cursorEl.textContent = '-';
+    return;
+  }
+  const prob = cellProbability(p.x, p.y);
+  cursorEl.textContent = `x ${p.x.toFixed(1)}  y ${p.y.toFixed(1)}  P ${prob === null ? '-' : prob.toFixed(2)}`;
 });
 
 // ---------------------------------------------------------------- link

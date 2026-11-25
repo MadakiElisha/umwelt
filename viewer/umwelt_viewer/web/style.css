@@ -68,3 +68,6 @@ button.active { border-color: var(--free); color: var(--free); }
 .swatch.unk { background: var(--unk); }
 
 .hint { margin-top: 8px; color: var(--muted); font-size: 12px; }
+
+.cursor { padding-top: 8px; border-top: 1px solid rgba(255, 255, 255, 0.08); color: var(--muted); }
+.cursor #cursor { color: var(--text); font-variant-numeric: tabular-nums; }
